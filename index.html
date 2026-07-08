@@ -2,51 +2,56 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodyRat</title>
     <style>
         body { margin: 0; background: #000; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         canvas { position: absolute; top: 0; left: 0; z-index: 0; }
-        
-        .header { position: absolute; top: 20px; left: 20px; z-index: 1; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #00ff41; }
-        .ui { position: relative; z-index: 1; text-align: center; width: 100%; padding: 20px; }
-        
-        .btn { padding: 25px 40px; border: 2px solid #00ff41; background: rgba(0, 255, 65, 0.1); color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 80%; max-width: 300px; }
-        .btn:hover { background: #00ff41; color: #000; }
-        
-        .contact { margin-top: 30px; font-size: 16px; color: #008f11; }
+        .ui { position: relative; z-index: 1; text-align: center; width: 100%; }
+        .header { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
+        .typewriter { font-size: 16px; height: 20px; margin-bottom: 30px; color: #008f11; }
+        .btn { padding: 20px 40px; border: 1px solid #00ff41; background: transparent; color: #00ff41; font-size: 18px; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
     <canvas id="grid"></canvas>
-    
-    <div class="header">CodyRat [v.99]</div>
-    
     <div class="ui">
-        <button id="btn" class="btn">EXECUTE DOWNLOAD</button>
-        <div class="contact">TG: @mynewdead</div>
+        <div class="header">CodyRat [v.99]</div>
+        <div class="typewriter" id="text"></div>
+        <button class="btn" onclick="window.location.href='ссылка'">EXECUTE DOWNLOAD</button>
+        <p>TG: @mynewdead</p>
     </div>
 
     <script>
-        const canvas = document.getElementById('grid');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('grid'), ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const points = [];
-        for (let x = 0; x < canvas.width; x += 40) {
-            for (let y = 0; y < canvas.height; y += 40) {
-                points.push({x, y, active: Math.random() > 0.95});
-            }
-        }
+        const pts = [];
+        for(let x=0; x<canvas.width; x+=60) for(let y=0; y<canvas.height; y+=60) pts.push({x, y, pulse: 0});
+        
         function draw() {
             ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            points.forEach(p => {
-                ctx.fillStyle = p.active ? '#00ff41' : '#003300';
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.active ? 2 : 1, 0, Math.PI * 2); ctx.fill();
-                if(Math.random() > 0.995) p.active = !p.active;
+            pts.forEach((p, i) => {
+                if(Math.random() > 0.99) p.pulse = 20;
+                ctx.fillStyle = p.pulse > 0 ? '#00ff41' : '#003300';
+                ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
+                if(p.pulse > 0) {
+                    ctx.strokeStyle = '#00ff41'; ctx.beginPath(); ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(pts[(i+1)%pts.length].x, pts[(i+1)%pts.length].y);
+                    ctx.stroke(); p.pulse--;
+                }
             });
             requestAnimationFrame(draw);
         }
         draw();
+        
+        const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм"];
+        let i=0, j=0;
+        function type() {
+            document.getElementById('text').textContent = texts[i].substring(0, j++);
+            if(j > texts[i].length) { j=0; i=(i+1)%texts.length; }
+            setTimeout(type, 150);
+        }
+        type();
     </script>
 </body>
 </html>
