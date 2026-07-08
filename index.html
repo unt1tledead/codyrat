@@ -7,14 +7,15 @@
     <style>
         body { margin: 0; background: #050505; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         canvas { position: absolute; top: 0; left: 0; z-index: 0; }
-        .ui { position: relative; z-index: 1; text-align: center; width: 90%; }
+        .ui { position: relative; z-index: 1; text-align: center; width: 90%; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .header { font-size: 32px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff41; }
         .typewriter { font-size: 18px; margin-bottom: 40px; height: 20px; }
         .cursor { animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
         .btn { padding: 25px 50px; border: 2px solid #00ff41; background: rgba(0, 255, 65, 0.05); color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; max-width: 350px; }
         .btn:hover { background: #00ff41; color: #050505; box-shadow: 0 0 15px #00ff41; }
-        .tg { margin-top: 20px; color: #00d4ff; font-size: 14px; text-shadow: 0 0 5px #00d4ff; }
+        .tg-container { position: absolute; bottom: 20px; width: 100%; text-align: center; }
+        .tg { color: #808080; font-size: 14px; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -23,7 +24,9 @@
         <div class="header">CodyRat</div>
         <div class="typewriter" id="text"></div>
         <button class="btn" onclick="window.location.href='ссылка'">EXECUTE DOWNLOAD</button>
-        <p class="tg">TG: @mynewdead</p>
+    </div>
+    <div class="tg-container">
+        <a href="https://t.me/mynewdead" class="tg">TG: @mynewdead</a>
     </div>
 
     <script>
@@ -42,10 +45,10 @@
         function drawLightning(x1, y1, x2, y2) {
             ctx.beginPath();
             ctx.moveTo(x1, y1);
-            let steps = 4;
+            let steps = 6;
             for(let k = 1; k < steps; k++) {
-                let nx = x1 + (x2 - x1) * (k / steps) + (Math.random() * 20 - 10);
-                let ny = y1 + (y2 - y1) * (k / steps) + (Math.random() * 20 - 10);
+                let nx = x1 + (x2 - x1) * (k / steps) + (Math.random() * 40 - 20);
+                let ny = y1 + (y2 - y1) * (k / steps) + (Math.random() * 40 - 20);
                 ctx.lineTo(nx, ny);
             }
             ctx.lineTo(x2, y2);
@@ -61,31 +64,27 @@
                 ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fill();
             });
 
-            // Редкие молнии между случайными соседними точками
-            if(Math.random() > 0.85) {
+            // Частота уменьшена в 3 раза (было > 0.85, стало > 0.95)
+            if(Math.random() > 0.95) {
                 let p1 = pts[Math.floor(Math.random() * pts.length)];
-                // Ищем соседа (вправо или вниз)
-                let neighbors = pts.filter(p2 => 
-                    (p2.x === p1.x + spacing && p2.y === p1.y) || 
-                    (p2.y === p1.y + spacing && p2.x === p1.x)
-                );
+                // Выбираем случайную цель в радиусе до 3-х клеток (вместо одной)
+                let p2 = pts[Math.floor(Math.random() * pts.length)];
                 
-                if(neighbors.length > 0) {
-                    let p2 = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    ctx.strokeStyle = '#00d4ff'; // Голубая молния
-                    ctx.lineWidth = 1.5;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#00d4ff';
-                    drawLightning(p1.x, p1.y, p2.x, p2.y);
-                    ctx.shadowBlur = 0; // Сбрасываем свечение
-                }
+                ctx.strokeStyle = '#00d4ff';
+                ctx.lineWidth = 1.5;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#00d4ff';
+                drawLightning(p1.x, p1.y, p2.x, p2.y);
+                
+                // Убираем свечение после отрисовки
+                ctx.shadowBlur = 0;
+                ctx.shadowColor = 'transparent';
             }
             requestAnimationFrame(draw);
         }
         draw();
         
-        // Массив для твоих фраз
-        const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм", "Билдер бот ратников"];
+        const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм"];
         let i = 0, j = 0, del = false;
         
         function type() {
