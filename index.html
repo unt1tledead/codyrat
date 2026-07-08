@@ -2,38 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodyRat Terminal</title>
+    <title>CodyRat</title>
     <style>
-        body { 
-            background: #000; 
-            color: #00ff41; 
-            font-family: 'Courier New', Courier, monospace; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            overflow: hidden; 
-            position: relative;
-        }
-        /* Фон-дождь */
-        #matrix { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.3; }
+        body { background: #000; color: #00ff41; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        /* Эффект старого монитора */
+        body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; pointer-events: none; }
         
-        /* Элементы интерфейса */
-        .ui-container { position: relative; z-index: 10; text-align: center; }
-        
-        .header { position: absolute; top: 20px; left: 20px; font-size: 20px; z-index: 100; }
-        
-        .typewriter { font-size: 22px; height: 30px; margin-bottom: 40px; min-width: 400px; }
-        .cursor { display: inline-block; width: 12px; background: #00ff41; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-        
-        .btn { 
-            display: inline-block; 
-            padding: 25px 60px; 
-            border: 2px solid #00ff41; 
-            color: #00ff41; 
+        .header { position: absolute; top: 20px; left: 20px; }
+        .ui { text-align: center; }
+        #status { margin-bottom: 20px; height: 20px; }
+        .btn { padding: 20px 40px; border: 1px solid #00ff41; color: #00ff41; text-decoration: none; cursor: pointer; background: transparent; font-family: inherit; font-size: 18px; }
+        .btn:hover { background: #00ff41; color: #000; }
+        .footer { position: absolute; bottom: 20px; color: #008f11; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">CodyRat [v.99]</div>
+    <div class="ui">
+        <div id="status">READY</div>
+        <button id="downloadBtn" class="btn">EXECUTE DOWNLOAD</button>
+    </div>
+    <div class="footer">CONTACT: @your_telegram_handle | ENC_KEY: 0x992</div>
+
+    <script>
+        const btn = document.getElementById('downloadBtn');
+        const status = document.getElementById('status');
+        btn.addEventListener('click', () => {
+            btn.style.display = 'none';
+            const logs = ["INITIALIZING...", "BYPASSING_PORTS...", "ESTABLISHING_LINK...", "ENCRYPTING_PAYLOAD...", "ACCESS_GRANTED"];
+            let i = 0;
+            const interval = setInterval(() => {
+                status.textContent = logs[i++];
+                if (i >= logs.length) {
+                    clearInterval(interval);
+                    status.textContent = "DOWNLOAD_STARTED";
+                    window.location.href = "ссылка_на_файл";
+                }
+            }, 1400);
+        });
+    </script>
+</body>
+</html>
             text-decoration: none; 
             text-transform: uppercase; 
             font-weight: bold; 
