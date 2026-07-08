@@ -7,16 +7,19 @@
     <style>
         body { margin: 0; background: #000; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         canvas { position: absolute; top: 0; left: 0; z-index: 0; }
-        .ui { position: relative; z-index: 1; text-align: center; width: 100%; }
-        .header { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-        .typewriter { font-size: 16px; height: 20px; margin-bottom: 30px; color: #008f11; }
-        .btn { padding: 20px 40px; border: 1px solid #00ff41; background: transparent; color: #00ff41; font-size: 18px; cursor: pointer; text-transform: uppercase; }
+        .ui { position: relative; z-index: 1; text-align: center; width: 90%; }
+        .header { font-size: 32px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 10px #00ff41; }
+        .typewriter { font-size: 18px; margin-bottom: 40px; height: 20px; }
+        .cursor { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+        .btn { padding: 25px 50px; border: 2px solid #00ff41; background: transparent; color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; max-width: 350px; }
+        .btn:hover { background: #00ff41; color: #000; }
     </style>
 </head>
 <body>
     <canvas id="grid"></canvas>
     <div class="ui">
-        <div class="header">CodyRat [v.99]</div>
+        <div class="header">CodyRat</div>
         <div class="typewriter" id="text"></div>
         <button class="btn" onclick="window.location.href='ссылка'">EXECUTE DOWNLOAD</button>
         <p>TG: @mynewdead</p>
@@ -26,18 +29,18 @@
         const canvas = document.getElementById('grid'), ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         const pts = [];
-        for(let x=0; x<canvas.width; x+=60) for(let y=0; y<canvas.height; y+=60) pts.push({x, y, pulse: 0});
+        for(let x=0; x<canvas.width; x+=50) for(let y=0; y<canvas.height; y+=50) pts.push({x, y, active: 0});
         
         function draw() {
-            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            pts.forEach((p, i) => {
-                if(Math.random() > 0.99) p.pulse = 20;
-                ctx.fillStyle = p.pulse > 0 ? '#00ff41' : '#003300';
-                ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI*2); ctx.fill();
-                if(p.pulse > 0) {
+            ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+            pts.forEach(p => {
+                if(Math.random() > 0.995) p.active = 10;
+                ctx.fillStyle = p.active > 0 ? '#00ff41' : '#002200';
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fill();
+                if(p.active-- > 0) {
                     ctx.strokeStyle = '#00ff41'; ctx.beginPath(); ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(pts[(i+1)%pts.length].x, pts[(i+1)%pts.length].y);
-                    ctx.stroke(); p.pulse--;
+                    ctx.lineTo(p.x + (Math.random()*40-20), p.y + (Math.random()*40-20));
+                    ctx.stroke();
                 }
             });
             requestAnimationFrame(draw);
@@ -45,11 +48,14 @@
         draw();
         
         const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм"];
-        let i=0, j=0;
+        let i=0, j=0, del=false;
         function type() {
-            document.getElementById('text').textContent = texts[i].substring(0, j++);
-            if(j > texts[i].length) { j=0; i=(i+1)%texts.length; }
-            setTimeout(type, 150);
+            const txt = texts[i];
+            document.getElementById('text').innerHTML = txt.substring(0, j) + '<span class="cursor">_</span>';
+            if(!del && j < txt.length) j++;
+            else if(del && j > 0) j--;
+            else { del = !del; if(!del) i = (i+1)%texts.length; }
+            setTimeout(type, del ? 50 : 150);
         }
         type();
     </script>
