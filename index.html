@@ -2,44 +2,53 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodyRat</title>
     <style>
-        body { background: #000; color: #00ff41; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        /* Эффект старого монитора */
-        body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; pointer-events: none; }
-        
-        .header { position: absolute; top: 20px; left: 20px; }
-        .ui { text-align: center; }
-        #status { margin-bottom: 20px; height: 20px; }
-        .btn { padding: 20px 40px; border: 1px solid #00ff41; color: #00ff41; text-decoration: none; cursor: pointer; background: transparent; font-family: inherit; font-size: 18px; }
+        body { margin: 0; background: #000; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        canvas { position: absolute; top: 0; left: 0; z-index: 0; }
+        .ui { position: relative; z-index: 1; text-align: center; }
+        .btn { padding: 20px 40px; border: 1px solid #00ff41; background: rgba(0, 255, 65, 0.1); color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { background: #00ff41; color: #000; }
-        .footer { position: absolute; bottom: 20px; color: #008f11; font-size: 12px; }
+        .header { position: absolute; top: 20px; left: 20px; z-index: 1; }
     </style>
 </head>
 <body>
-    <div class="header">CodyRat [v.99]</div>
+    <canvas id="grid"></canvas>
+    <div class="header">CodyRat</div>
     <div class="ui">
-        <div id="status">READY</div>
-        <button id="downloadBtn" class="btn">EXECUTE DOWNLOAD</button>
+        <button id="btn" class="btn">EXECUTE DOWNLOAD</button>
+        <p>TG: @mynewdead</p>
     </div>
-    <div class="footer">CONTACT: @your_telegram_handle | ENC_KEY: 0x992</div>
 
     <script>
-        const btn = document.getElementById('downloadBtn');
-        const status = document.getElementById('status');
-        btn.addEventListener('click', () => {
-            btn.style.display = 'none';
-            const logs = ["INITIALIZING...", "BYPASSING_PORTS...", "ESTABLISHING_LINK...", "ENCRYPTING_PAYLOAD...", "ACCESS_GRANTED"];
-            let i = 0;
-            const interval = setInterval(() => {
-                status.textContent = logs[i++];
-                if (i >= logs.length) {
-                    clearInterval(interval);
-                    status.textContent = "DOWNLOAD_STARTED";
-                    window.location.href = "ссылка_на_файл";
+        const canvas = document.getElementById('grid');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+        const points = [];
+        const spacing = 50;
+        for (let x = 0; x < canvas.width; x += spacing) {
+            for (let y = 0; y < canvas.height; y += spacing) {
+                points.push({x, y, active: Math.random() > 0.95});
+            }
+        }
+
+        function draw() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#003300';
+            points.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1, 0, Math.PI * 2); ctx.fill();
+                if(p.active) {
+                    ctx.fillStyle = '#00ff41'; ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#003300';
                 }
-            }, 1400);
-        });
+            });
+            // Движение тока
+            points.forEach(p => if(Math.random() > 0.99) p.active = !p.active);
+            requestAnimationFrame(draw);
+        }
+        draw();
     </script>
 </body>
 </html>
