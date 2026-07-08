@@ -5,22 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodyRat Terminal</title>
     <style>
-        body { background: #000; color: #00ff41; font-family: 'Courier New', Courier, monospace; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .terminal-header { font-size: 24px; margin-bottom: 20px; border-bottom: 2px solid #00ff41; padding-bottom: 10px; }
-        .typewriter { font-size: 18px; height: 30px; margin-bottom: 30px; }
-        .cursor { display: inline-block; width: 10px; background: #00ff41; animation: blink 1s infinite; }
+        body { 
+            background: #000; 
+            color: #00ff41; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+            position: relative;
+        }
+        /* Фон-дождь */
+        #matrix { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.3; }
+        
+        /* Элементы интерфейса */
+        .ui-container { position: relative; z-index: 10; text-align: center; }
+        
+        .header { position: absolute; top: 20px; left: 20px; font-size: 20px; z-index: 100; }
+        
+        .typewriter { font-size: 22px; height: 30px; margin-bottom: 40px; min-width: 400px; }
+        .cursor { display: inline-block; width: 12px; background: #00ff41; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
-        .btn { padding: 15px 30px; border: 1px solid #00ff41; color: #00ff41; text-decoration: none; text-transform: uppercase; }
-        .btn:hover { background: #00ff41; color: #000; }
+        
+        .btn { 
+            display: inline-block; 
+            padding: 25px 60px; 
+            border: 2px solid #00ff41; 
+            color: #00ff41; 
+            text-decoration: none; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            font-size: 24px; 
+            transition: all 0.3s;
+            background: rgba(0, 255, 65, 0.1);
+        }
+        .btn:hover { background: #00ff41; color: #000; box-shadow: 0 0 20px #00ff41; }
+
+        /* Бермудский треугольник */
+        .triangle {
+            position: absolute; bottom: 30px; right: 30px;
+            width: 0; height: 0;
+            border-left: 50px solid transparent; border-right: 50px solid transparent;
+            border-bottom: 86.6px solid #00ff41;
+            animation: pulseTri 2s infinite;
+            opacity: 0.5;
+        }
+        @keyframes pulseTri { 50% { opacity: 1; transform: scale(1.1); } }
     </style>
 </head>
 <body>
 
-    <div class="terminal-header">CodyRat</div>
-    <div class="typewriter"><span id="text"></span><span class="cursor">&nbsp;</span></div>
-    <a href="ссылка_на_файл" class="btn">Execute Download</a>
+    <canvas id="matrix"></canvas>
+
+    <div class="header">CodyRat [v.99]</div>
+
+    <div class="ui-container">
+        <div class="typewriter"><span id="text"></span><span class="cursor">&nbsp;</span></div>
+        <a href="ссылка_на_файл" class="btn">Execute Download</a>
+    </div>
+
+    <div class="triangle"></div>
 
     <script>
+        // Эффект Матрицы
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const katakana = 'アカサタナハマヤラワガザダバパイキシチニヒミリヰギジヂビプウクスツヌフムユルグズヅブペエセテネヘメレヱゲゼデベポオコソトノホモヨヲゴゾドボヴッン0123456789';
+        const drops = []; const fontSize = 16; const columns = canvas.width / fontSize;
+        for(let x = 0; x < columns; x++) drops[x] = 1;
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41'; ctx.font = fontSize + 'px monospace';
+            for(let i = 0; i < drops.length; i++) {
+                const text = katakana.charAt(Math.floor(Math.random() * katakana.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 35);
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+
+        // Эффект печати
         const texts = ["Ратник будущего", "Работает без портов", "Управление через телеграм"];
         let i = 0, j = 0, currentText = '', isDeleting = false;
         function type() {
