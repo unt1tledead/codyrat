@@ -3,115 +3,774 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodyRat</title>
+    <title>NHelper Utility</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for UI & Console -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700;900&family=Segoe+UI&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #050505; color: #00ff41; font-family: 'Courier New', monospace; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        canvas { position: absolute; top: 0; left: 0; z-index: 0; }
-        
-        .ui { position: relative; z-index: 1; text-align: center; width: 90%; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
-        .header { font-size: 32px; font-weight: bold; margin-bottom: 10px; text-shadow: 0 0 8px #00ff41; }
-        .typewriter { font-size: 18px; margin-bottom: 40px; height: 20px; }
-        .cursor { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-        
-        .btn { padding: 20px 40px; border: 2px solid #00ff41; background: rgba(0, 255, 65, 0.05); color: #00ff41; font-size: 18px; cursor: pointer; text-transform: uppercase; transition: 0.3s; width: auto; display: inline-block; text-decoration: none; }
-        .btn:hover { background: #00ff41; color: #050505; box-shadow: 0 0 15px #00ff41; }
-
-        .vt-container { position: relative; z-index: 1; margin-bottom: 60px; text-align: center; }
-        .vt-link-btn { display: inline-block; padding: 10px 20px; border: 1px solid #00ff41; background: transparent; color: #00ff41; font-size: 14px; text-decoration: none; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .vt-link-btn:hover { background: #00ff41; color: #050505; }
-        
-        .vt-score { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #00ff41; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; color: #00ff41; font-weight: bold; }
-        .vt-score-val { font-size: 16px; }
-        .vt-score-label { font-size: 9px; }
-
-        .tg-container { position: relative; z-index: 1; padding-bottom: 20px; }
-        .tg { color: #808080; font-size: 14px; text-decoration: none; }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .console-font {
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        /* Стилизация скроллбара под Win11/WinForms */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2d2d32;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00a2e8;
+        }
     </style>
 </head>
-<body>
-    <canvas id="grid"></canvas>
-    <div class="ui">
-        <div class="header">CodyRat</div>
-        <div class="typewriter" id="text"></div>
-        <a href="https://github.com/unt1tledead/codyrat/raw/main/Kakashki.zip" class="btn">EXECUTE DOWNLOAD</a>
-    </div>
+<body class="bg-[#121214] text-white h-screen flex flex-col overflow-hidden text-sm">
 
-    <div class="vt-container">
-        <div class="vt-score">
-            <div class="vt-score-val">0/65</div>
-            <div class="vt-score-label">Детекты VT</div>
+    <!-- HEADER (ШАПКА ПРИЛОЖЕНИЯ) -->
+    <header class="h-[45px] bg-[#18181c] flex items-center justify-between border-b border-[#2d2d32] shrink-0 select-none">
+        <div class="pl-4 text-xs font-semibold text-gray-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#00a2e8] animate-pulse"></span>
+            NHelper // Многофункциональная утилита восстановления
         </div>
-        <a href="https://www.virustotal.com/gui/file/0b9c70c8d75d447337158ea96899e0d63e9356961c3f9f7193b4956d11d51ba2/summary" class="vt-link-btn" target="_blank">VirusTotal</a>
+        <!-- Кнопки управления окном (Windows-style) -->
+        <div class="flex h-full">
+            <button class="w-[45px] h-full flex items-center justify-center text-gray-400 hover:bg-[#2d2d32] hover:text-white transition-colors duration-150 text-xs">
+                —
+            </button>
+            <button class="w-[45px] h-full flex items-center justify-center text-gray-400 hover:bg-[#2d2d32] hover:text-white transition-colors duration-150 text-xs">
+                🗖
+            </button>
+            <button onclick="mockExit()" class="w-[45px] h-full flex items-center justify-center text-gray-400 hover:bg-[#e81123] hover:text-white transition-colors duration-150 text-sm">
+                ✕
+            </button>
+        </div>
+    </header>
+
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- SIDEBAR (ЛЕВАЯ НАВИГАЦИЯ) -->
+        <aside class="w-[220px] bg-[#18181c] border-r border-[#2d2d32] flex flex-col py-6 shrink-0">
+            <!-- Логотип -->
+            <div class="px-5 mb-8">
+                <h1 class="text-2xl font-black tracking-wider text-[#00a2e8]">NHELPER</h1>
+                <p class="text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">SYSTEM UTILITY v5.0</p>
+            </div>
+
+            <!-- Элементы меню -->
+            <nav class="flex-1 space-y-1 px-2">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-white bg-[#00a2e8] transition-all duration-150">
+                    <span class="mr-3 text-base">📊</span> Главная
+                </button>
+                <button onclick="switchTab('autostart')" id="nav-autostart" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-gray-400 hover:bg-[#222226] hover:text-white transition-all duration-150">
+                    <span class="mr-3 text-base">🚀</span> Автозагрузка
+                </button>
+                <button onclick="switchTab('restrictions')" id="nav-restrictions" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-gray-400 hover:bg-[#222226] hover:text-white transition-all duration-150">
+                    <span class="mr-3 text-base">🔓</span> Ограничения
+                </button>
+                <button onclick="switchTab('processes')" id="nav-processes" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-gray-400 hover:bg-[#222226] hover:text-white transition-all duration-150">
+                    <span class="mr-3 text-base">⚙️</span> Процессы
+                </button>
+                <button onclick="switchTab('tools')" id="nav-tools" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-gray-400 hover:bg-[#222226] hover:text-white transition-all duration-150">
+                    <span class="mr-3 text-base">🛠️</span> Инструменты
+                </button>
+                <button onclick="switchTab('about')" id="nav-about" class="w-full flex items-center px-4 py-2.5 rounded-md text-left font-semibold text-gray-400 hover:bg-[#222226] hover:text-white transition-all duration-150">
+                    <span class="mr-3 text-base">ℹ️</span> О программе
+                </button>
+            </nav>
+
+            <!-- Версия / Платформа -->
+            <div class="px-5 text-[10px] text-gray-500">
+                <p>Режим: <span class="text-[#00a2e8] font-bold">WinRE Active</span></p>
+                <p>Платформа: x64 CLI & GUI</p>
+            </div>
+        </aside>
+
+        <!-- ПРАВАЯ ЧАСТЬ (КОНТЕНТ + ТЕРМИНАЛ) -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            
+            <!-- VIEWPORT (ЭКРАНЫ) -->
+            <div class="flex-1 overflow-y-auto p-6 relative">
+                
+                <!-- 1. ГЛАВНАЯ (DASHBOARD) -->
+                <div id="tab-dashboard" class="space-y-6 tab-content">
+                    <h2 class="text-2xl font-semibold text-white">Панель управления NHelper</h2>
+                    
+                    <!-- Главная плашка статуса -->
+                    <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="space-y-2">
+                            <h3 id="status-headline" class="text-lg font-bold text-yellow-400 flex items-center gap-2">
+                                ⚠️ Статус системы: ТРЕБУЕТСЯ АНАЛИЗ
+                            </h3>
+                            <p class="text-gray-400 max-w-xl">
+                                Запустите сканирование уязвимостей, чтобы проверить автозапуск, снять системные ограничения реестра и оптимизировать работу ОС.
+                            </p>
+                        </div>
+                        <button onclick="runQuickScan()" class="px-5 py-3 bg-[#00a2e8] hover:bg-[#008bc7] active:bg-[#0072a3] text-white font-bold rounded-lg transition-colors border border-[#00a2e8] shadow-lg shrink-0">
+                            Быстрое сканирование
+                        </button>
+                    </div>
+
+                    <!-- Сетка быстрых карточек -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Карточка 1 -->
+                        <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-5 flex flex-col justify-between h-[210px]">
+                            <div class="space-y-2">
+                                <h4 class="text-base font-semibold text-white">Автозагрузка</h4>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Контролируйте, какие программы запускаются вместе с Windows. Удаляйте вирусы из автозапуска.
+                                </p>
+                            </div>
+                            <button onclick="switchTab('autostart')" class="w-full py-2 bg-[#2073a0] hover:bg-[#1a5f85] text-white font-semibold rounded-lg text-xs transition-colors">
+                                Перейти
+                            </button>
+                        </div>
+
+                        <!-- Карточка 2 -->
+                        <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-5 flex flex-col justify-between h-[210px]">
+                            <div class="space-y-2">
+                                <h4 class="text-base font-semibold text-white">Блокировки</h4>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Если вирус заблокировал Диспетчер задач, Редактор реестра или Hosts — снимите блокировку в 1 клик.
+                                </p>
+                            </div>
+                            <button onclick="switchTab('restrictions')" class="w-full py-2 bg-[#2073a0] hover:bg-[#1a5f85] text-white font-semibold rounded-lg text-xs transition-colors">
+                                Исправить
+                            </button>
+                        </div>
+
+                        <!-- Карточка 3 -->
+                        <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-5 flex flex-col justify-between h-[210px]">
+                            <div class="space-y-2">
+                                <h4 class="text-base font-semibold text-white">Инструменты</h4>
+                                <p class="text-xs text-gray-400 leading-relaxed">
+                                    Тонкая настройка: сброс шрифтов, восстановление оболочки входа, очистка реестра и временных файлов.
+                                </p>
+                            </div>
+                            <button onclick="switchTab('tools')" class="w-full py-2 bg-[#2073a0] hover:bg-[#1a5f85] text-white font-semibold rounded-lg text-xs transition-colors">
+                                Открыть
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. АВТОЗАГРУЗКА (AUTOSTART) -->
+                <div id="tab-autostart" class="space-y-6 tab-content hidden">
+                    <h2 class="text-2xl font-semibold text-white">Менеджер автозагрузки Windows</h2>
+                    
+                    <!-- Таблица ListView -->
+                    <div class="border border-[#2d2d32] rounded-lg overflow-hidden bg-[#1c1c20]">
+                        <div class="max-h-[320px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-[#2d2d32] text-xs font-bold text-gray-200">
+                                        <th class="p-3 border-r border-[#1c1c20] w-[150px]">Название</th>
+                                        <th class="p-3 border-r border-[#1c1c20] w-[350px]">Команда запуска / Путь</th>
+                                        <th class="p-3 border-r border-[#1c1c20] w-[100px]">Риск</th>
+                                        <th class="p-3 w-[100px]">Расположение</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="startup-table-body" class="text-xs">
+                                    <!-- Строка 1 (Критическая угроза) -->
+                                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="IntelDriverUpdate" data-risk="Высокий">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32]">IntelDriverUpdate</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-red-400 font-mono">C:\Users\Public\Temp\updater.exe --silent</td>
+                                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-red-900/50 text-red-400 font-bold">Высокий</span></td>
+                                        <td class="p-3 text-gray-400">HKCU\Run</td>
+                                    </tr>
+                                    <!-- Строка 2 (Подозрительный) -->
+                                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="WindowsHelperScript" data-risk="Подозрительный">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32]">HelperScript</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-orange-400 font-mono">C:\Windows\System32\wscript.exe /e:VBScript C:\ProgramData\help.vbs</td>
+                                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-orange-900/50 text-orange-400 font-bold">Подозрительный</span></td>
+                                        <td class="p-3 text-gray-400">HKLM\Run</td>
+                                    </tr>
+                                    <!-- Строка 3 (Нормальный) -->
+                                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="OneDrive" data-risk="Обычный">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32]">OneDrive</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-gray-300 font-mono">"C:\Program Files\Microsoft OneDrive\OneDrive.exe" /background</td>
+                                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">Обычный</span></td>
+                                        <td class="p-3 text-gray-400">HKCU\Run</td>
+                                    </tr>
+                                    <!-- Строка 4 (Нормальный) -->
+                                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="SecurityHealth" data-risk="Обычный">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32]">SecurityHealth</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-gray-300 font-mono">%Windir%\System32\SecurityHealthSystray.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">Обычный</span></td>
+                                        <td class="p-3 text-gray-400">HKLM\Run</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки управления автозагрузкой -->
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="refreshStartup()" class="px-5 py-2.5 bg-[#2d2d32] hover:bg-[#35353a] border border-[#3e3e44] text-white font-semibold rounded-lg text-xs transition-colors">
+                            Обновить список
+                        </button>
+                        <button onclick="deleteSelectedStartup()" class="px-5 py-2.5 bg-[#781e1e] hover:bg-[#962828] border border-red-900 text-white font-semibold rounded-lg text-xs transition-colors">
+                            Удалить выбранное
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. ОГРАНИЧЕНИЯ (RESTRICTIONS) -->
+                <div id="tab-restrictions" class="space-y-6 tab-content hidden">
+                    <h2 class="text-2xl font-semibold text-white">Снятие ограничений и разблокировка</h2>
+                    
+                    <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-6 space-y-6">
+                        <p class="text-sm text-gray-400">
+                            Вредоносное ПО часто отключает системные утилиты управления. Данный модуль позволяет восстановить работоспособность заблокированных функций ОС в один клик.
+                        </p>
+
+                        <!-- Список исправлений -->
+                        <div class="space-y-4">
+                            <!-- Фикс 1 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Разблокировать Диспетчер задач</h4>
+                                    <p class="text-xs text-gray-500">Восстанавливает заблокированный вирусом Task Manager (удаляет параметр DisableTaskMgr в реестре)</p>
+                                </div>
+                                <button onclick="triggerFix('taskmgr', 'Разблокировка Диспетчера задач')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+
+                            <!-- Фикс 2 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Разблокировать Редактор реестра</h4>
+                                    <p class="text-xs text-gray-500">Восстанавливает доступ к regedit.exe (удаляет параметр DisableRegistryTools)</p>
+                                </div>
+                                <button onclick="triggerFix('regedit', 'Разблокировка Редактора реестра')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+
+                            <!-- Фикс 3 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Разблокировать Командную строку</h4>
+                                    <p class="text-xs text-gray-500">Убирает запрет администратора на запуск консоли командной строки (cmd.exe)</p>
+                                </div>
+                                <button onclick="triggerFix('cmd', 'Разблокировка Командной строки')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+
+                            <!-- Фикс 4 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Сбросить файл Hosts</h4>
+                                    <p class="text-xs text-gray-500">Очищает файл hosts от вирусных редиректов и восстанавливает его оригинальный чистый вид</p>
+                                </div>
+                                <button onclick="triggerFix('hosts', 'Сброс файла Hosts')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+
+                            <!-- Фикс 5 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Убрать запрет запуска ПО (DisallowRun)</h4>
+                                    <p class="text-xs text-gray-500">Снимает блокировки с запуска защитного ПО и сторонних утилит из веток Explorer</p>
+                                </div>
+                                <button onclick="triggerFix('disallowrun', 'Снятие ограничений DisallowRun')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+
+                            <!-- Фикс 6 -->
+                            <div class="flex items-center justify-between p-3 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-white">Восстановить клавиатуру (Scancode Map)</h4>
+                                    <p class="text-xs text-gray-500">Сбрасывает вредоносные переназначения клавиш в реестре, восстанавливая кнопки к работе</p>
+                                </div>
+                                <button onclick="triggerFix('scancode', 'Очистка реестра Scancode Map')" class="px-4 py-2 bg-[#00a2e8] hover:bg-[#008bc7] text-white font-semibold rounded text-xs transition-colors shrink-0">
+                                    Исправить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. ПРОЦЕССЫ (PROCESSES) -->
+                <div id="tab-processes" class="space-y-6 tab-content hidden">
+                    <h2 class="text-2xl font-semibold text-white">Диспетчер процессов NHelper</h2>
+                    
+                    <!-- Таблица процессов -->
+                    <div class="border border-[#2d2d32] rounded-lg overflow-hidden bg-[#1c1c20]">
+                        <div class="max-h-[320px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-[#2d2d32] text-xs font-bold text-gray-200">
+                                        <th class="p-3 border-r border-[#1c1c20] w-[180px]">Имя процесса</th>
+                                        <th class="p-3 border-r border-[#1c1c20] w-[80px]">PID</th>
+                                        <th class="p-3 border-r border-[#1c1c20] w-[100px]">Память (МБ)</th>
+                                        <th class="p-3 w-[330px]">Путь к исполняемому файлу</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="process-table-body" class="text-xs font-mono">
+                                    <!-- Процесс 1 -->
+                                    <tr onclick="selectProcessRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-pid="4012" data-name="explorer.exe">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32] text-gray-300">explorer.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-[#00a2e8]">4012</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">142.4</td>
+                                        <td class="p-3 text-gray-500">C:\Windows\explorer.exe</td>
+                                    </tr>
+                                    <!-- Процесс 2 -->
+                                    <tr onclick="selectProcessRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors text-red-400" data-pid="11042" data-name="system_patcher.exe">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32]">system_patcher.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">11042</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">18.9</td>
+                                        <td class="p-3 text-red-500">C:\Users\Public\Temp\system_patcher.exe</td>
+                                    </tr>
+                                    <!-- Процесс 3 -->
+                                    <tr onclick="selectProcessRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-pid="824" data-name="svchost.exe">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32] text-gray-300">svchost.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-[#00a2e8]">824</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">45.1</td>
+                                        <td class="p-3 text-gray-500">C:\Windows\System32\svchost.exe</td>
+                                    </tr>
+                                    <!-- Процесс 4 -->
+                                    <tr onclick="selectProcessRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-pid="3524" data-name="chrome.exe">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32] text-gray-300">chrome.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-[#00a2e8]">3524</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">310.8</td>
+                                        <td class="p-3 text-gray-500">C:\Program Files\Google\Chrome\Application\chrome.exe</td>
+                                    </tr>
+                                    <!-- Процесс 5 -->
+                                    <tr onclick="selectProcessRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-pid="5672" data-name="taskmgr.exe">
+                                        <td class="p-3 font-semibold border-r border-[#2d2d32] text-gray-300">taskmgr.exe</td>
+                                        <td class="p-3 border-r border-[#2d2d32] text-[#00a2e8]">5672</td>
+                                        <td class="p-3 border-r border-[#2d2d32]">22.3</td>
+                                        <td class="p-3 text-gray-500">C:\Windows\System32\taskmgr.exe</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки управления процессами -->
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="refreshProcesses()" class="px-5 py-2.5 bg-[#2d2d32] hover:bg-[#35353a] border border-[#3e3e44] text-white font-semibold rounded-lg text-xs transition-colors">
+                            Обновить
+                        </button>
+                        <button onclick="killSelectedProcess()" class="px-5 py-2.5 bg-[#781e1e] hover:bg-[#962828] border border-red-900 text-white font-semibold rounded-lg text-xs transition-colors">
+                            Завершить
+                        </button>
+                        <button onclick="suspendSelectedProcess()" class="px-5 py-2.5 bg-[#785014] hover:bg-[#96641a] border border-orange-900 text-white font-semibold rounded-lg text-xs transition-colors">
+                            Заморозить
+                        </button>
+                        <button onclick="resumeSelectedProcess()" class="px-5 py-2.5 bg-[#146432] hover:bg-[#1a7d3e] border border-green-900 text-white font-semibold rounded-lg text-xs transition-colors">
+                            Разморозить
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 5. ИНСТРУМЕНТЫ (TOOLS) -->
+                <div id="tab-tools" class="space-y-6 tab-content hidden">
+                    <h2 class="text-2xl font-semibold text-white">Встроенные утилиты обслуживания</h2>
+                    
+                    <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-6 space-y-6">
+                        <div class="space-y-6">
+                            <!-- Инструмент 1 -->
+                            <div class="flex items-center justify-between p-4 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-base font-semibold text-white">Очистить временные папки системы</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Удаляет временные кэши браузеров, папки Temp и логи установщиков для очистки свободного места.</p>
+                                </div>
+                                <button onclick="runTool('cleanTemp', 'Очистить Temp')" class="px-5 py-2.5 bg-[#2d2d32] hover:bg-[#35353a] text-white font-semibold rounded-md text-xs transition-colors border border-[#3e3e44] shrink-0">
+                                    Очистить Temp
+                                </button>
+                            </div>
+
+                            <!-- Инструмент 2 -->
+                            <div class="flex items-center justify-between p-4 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-base font-semibold text-white">Очистить сетевой кэш DNS</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Применяет команду ipconfig /flushdns для восстановления нормального сетевого подключения.</p>
+                                </div>
+                                <button onclick="runTool('flushDNS', 'Сбросить DNS')" class="px-5 py-2.5 bg-[#2d2d32] hover:bg-[#35353a] text-white font-semibold rounded-md text-xs transition-colors border border-[#3e3e44] shrink-0">
+                                    Сбросить DNS
+                                </button>
+                            </div>
+
+                            <!-- Инструмент 3 -->
+                            <div class="flex items-center justify-between p-4 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-base font-semibold text-white">Восстановление ассоциаций системных файлов</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Исправляет запуск .exe, .bat, .lnk файлов, если вирус нарушил их нормальный запуск в Windows.</p>
+                                </div>
+                                <button onclick="runTool('resetAssoc', 'Сбросить ассоциации')" class="px-5 py-2.5 bg-[#2d2d32] hover:bg-[#35353a] text-white font-semibold rounded-md text-xs transition-colors border border-[#3e3e44] shrink-0">
+                                    Сбросить ассоциации
+                                </button>
+                            </div>
+
+                            <!-- Инструмент 4 -->
+                            <div class="flex items-center justify-between p-4 bg-[#121214] border border-[#2d2d32] rounded-lg gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-base font-semibold text-white text-[#00a2e8]">Проверить целостность файлов (SFC)</h4>
+                                    <p class="text-xs text-gray-500 mt-1">Запускает системное средство sfc /scannow в новом окне для восстановления системных библиотек.</p>
+                                </div>
+                                <button onclick="runTool('sfc', 'Запустить SFC')" class="px-5 py-2.5 bg-[#2073a0] hover:bg-[#1a5f85] text-white font-semibold rounded-md text-xs transition-colors shrink-0">
+                                    Запустить SFC
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. О ПРОГРАММЕ (ABOUT) -->
+                <div id="tab-about" class="space-y-6 tab-content hidden">
+                    <h2 class="text-2xl font-semibold text-white">О программе NHelper</h2>
+                    
+                    <div class="bg-[#1c1c20] border border-[#2d2d32] rounded-xl p-6 space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-[#00a2e8]">NHelper System Recovery Tool v5.0</h3>
+                            <p class="text-sm text-gray-300">
+                                Разработчик оригинальной идеи: <span class="font-bold text-white">getgansss</span>
+                            </p>
+                            <p class="text-xs text-gray-400">
+                                Портировано на кастомный HTML5 & Tailwind UI для работы в интерактивных песочницах и вебе.
+                            </p>
+                        </div>
+
+                        <div class="p-4 bg-red-950/40 border border-red-900 rounded-lg text-red-300 text-xs italic space-y-2">
+                            <p class="font-bold">⚠️ ВНИМАНИЕ:</p>
+                            <p>
+                                Скачивая и используя утилиту, вы соглашаетесь с тем, что вы делаете все изменения в системе на ваш собственный страх и риск. Автор не несет ответственности за возможные повреждения вашей операционной системы.
+                            </p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400">Полезные ссылки и поддержка:</h4>
+                            <div class="flex flex-wrap gap-4">
+                                <a href="https://nhelper.nedohackers.site/" target="_blank" class="px-4 py-2 bg-[#2d2d32] hover:bg-[#35353a] border border-[#3e3e44] text-white font-semibold rounded text-xs transition-colors">
+                                    🌐 Сайт проекта
+                                </a>
+                                <a href="https://t.me/NHelper_gg" target="_blank" class="px-4 py-2 bg-[#0088cc] hover:bg-[#0077b5] text-white font-semibold rounded text-xs transition-colors">
+                                    💬 Чат Telegram
+                                </a>
+                                <a href="https://www.donationalerts.com/r/getgans" target="_blank" class="px-4 py-2 bg-[#f06e1e] hover:bg-[#d85c13] text-white font-semibold rounded text-xs transition-colors">
+                                    💰 Поддержать проект
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ВСТРОЕННАЯ КОНСОЛЬ (НИЖНЯЯ ЧАСТЬ) -->
+            <footer class="h-[140px] bg-[#0c0c0e] border-t border-[#2d2d32] flex flex-col p-4 shrink-0 overflow-hidden relative">
+                <div class="flex items-center justify-between border-b border-[#2d2d32] pb-1.5 mb-1.5 shrink-0">
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Терминал вывода логов NHelper</span>
+                    <button onclick="clearConsole()" class="text-[10px] text-gray-400 hover:text-white hover:underline">Очистить терминал</button>
+                </div>
+                <!-- Зона скролла логов -->
+                <div id="console-logs" class="flex-1 overflow-y-auto console-font text-xs space-y-1 scroll-smooth pr-2">
+                    <!-- Будет наполняться через JS -->
+                </div>
+            </footer>
+
+        </main>
     </div>
 
-    <div class="tg-container">
-        <a href="https://t.me/mynewdead" class="tg">TG: @mynewdead</a>
-    </div>
-
+    <!-- Script для логики табов, стилизации выделения строк и вывода логов -->
     <script>
-        const canvas = document.getElementById('grid'), ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth;
-        let height = canvas.height = window.innerHeight;
-        const pts = [];
-        const spacing = 60;
-        
-        for(let x = 0; x < width; x += spacing) {
-            for(let y = 0; y < height; y += spacing) {
-                pts.push({x, y});
-            }
+        // Инициализационные логи консоли при запуске
+        window.addEventListener('DOMContentLoaded', () => {
+            logMessage("NHelper успешно запущен. Система готова к анализу.", "green");
+            logMessage("ВНИМАНИЕ: Обнаружена среда восстановления WinRE. Запущены оптимизированные алгоритмы.", "gold");
+            logMessage("Инициализирован веб-контейнер для демонстрации UI. Все API эмулированы.", "gray");
+        });
+
+        // Функция вывода логов в консоль
+        function logMessage(text, type = "white") {
+            const container = document.getElementById('console-logs');
+            const timeStr = new Date().toLocaleTimeString();
+            const logRow = document.createElement('div');
+            
+            let colorClass = "text-gray-300";
+            if (type === "green") colorClass = "text-emerald-400";
+            if (type === "gold") colorClass = "text-yellow-400";
+            if (type === "red") colorClass = "text-rose-400";
+            if (type === "cyan") colorClass = "text-cyan-400";
+            if (type === "gray") colorClass = "text-gray-500";
+
+            logRow.className = `${colorClass} py-0.5 leading-relaxed`;
+            logRow.innerHTML = `<span class="text-gray-600">[${timeStr}]</span> ${text}`;
+            
+            container.appendChild(logRow);
+            // Авто-скролл вниз
+            container.scrollTop = container.scrollHeight;
         }
-        
-        function drawLightning(x1, y1, x2, y2) {
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            let steps = 6;
-            for(let k = 1; k < steps; k++) {
-                let nx = x1 + (x2 - x1) * (k / steps) + (Math.random() * 40 - 20);
-                let ny = y1 + (y2 - y1) * (k / steps) + (Math.random() * 40 - 20);
-                ctx.lineTo(nx, ny);
-            }
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
+
+        // Очистить терминал логов
+        function clearConsole() {
+            document.getElementById('console-logs').innerHTML = '';
+            logMessage("Логи терминала успешно очищены.", "gray");
         }
-        
-        function draw() {
-            ctx.fillStyle = '#050505'; 
-            ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = '#003300';
-            pts.forEach(p => {
-                ctx.beginPath(); ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2); ctx.fill();
+
+        // Плавная смена вкладок
+        function switchTab(tabId) {
+            // Скрыть все вкладки
+            document.querySelectorAll('.tab-content').forEach(panel => {
+                panel.classList.add('hidden');
             });
-            if(Math.random() > 0.95) {
-                let p1 = pts[Math.floor(Math.random() * pts.length)];
-                let p2 = pts[Math.floor(Math.random() * pts.length)];
-                ctx.strokeStyle = '#00d4ff';
-                ctx.lineWidth = 1.5;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = '#00d4ff';
-                drawLightning(p1.x, p1.y, p2.x, p2.y);
-                ctx.shadowBlur = 0;
-            }
-            requestAnimationFrame(draw);
+            // Показать выбранную
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Обновить визуальный фокус кнопок в меню
+            const menuButtons = [
+                {id: 'dashboard', el: document.getElementById('nav-dashboard')},
+                {id: 'autostart', el: document.getElementById('nav-autostart')},
+                {id: 'restrictions', el: document.getElementById('nav-restrictions')},
+                {id: 'processes', el: document.getElementById('nav-processes')},
+                {id: 'tools', el: document.getElementById('nav-tools')},
+                {id: 'about', el: document.getElementById('nav-about')}
+            ];
+
+            menuButtons.forEach(btn => {
+                if (btn.id === tabId) {
+                    btn.el.classList.remove('text-gray-400', 'hover:bg-[#222226]', 'hover:text-white');
+                    btn.el.classList.add('text-white', 'bg-[#00a2e8]');
+                } else {
+                    btn.el.classList.remove('text-white', 'bg-[#00a2e8]');
+                    btn.el.classList.add('text-gray-400', 'hover:bg-[#222226]', 'hover:text-white');
+                }
+            });
+
+            logMessage(`Переход на вкладку: "${tabId.toUpperCase()}"`, "gray");
         }
-        draw();
-        
-        const texts = ["Бот билдер ратников", "Ратник будущего", "Работает без портов", "Управление через телеграм"];
-        let i = 0, j = 0, del = false, pause = false;
-        
-        function type() {
-            if (pause) return; 
-            const txt = texts[i];
-            const el = document.getElementById('text');
-            if(el) el.innerHTML = txt.substring(0, j) + '<span class="cursor">_</span>';
-            if(!del && j < txt.length) { j++; setTimeout(type, 120); }
-            else if(del && j > 0) { j--; setTimeout(type, 40); }
-            else {
-                if (!del && j === txt.length) { pause = true; setTimeout(() => { pause = false; del = true; type(); }, 1000); } 
-                else if (del && j === 0) { del = false; i = (i + 1) % texts.length; setTimeout(type, 120); }
+
+        // Выбор элементов автозапуска в таблице (Симуляция WinForms ListView Row Selection)
+        let selectedStartupRow = null;
+        function selectTableRow(row) {
+            if (selectedStartupRow) {
+                selectedStartupRow.classList.remove('bg-sky-600/30', 'border-sky-500');
+            }
+            selectedStartupRow = row;
+            selectedStartupRow.classList.add('bg-sky-600/30', 'border-sky-500');
+            
+            const name = row.getAttribute('data-name');
+            const risk = row.getAttribute('data-risk');
+            logMessage(`Выбран элемент автозагрузки: "${name}" [Уровень риска: ${risk}]`, "cyan");
+        }
+
+        // Удалить выбранный элемент автозапуска
+        function deleteSelectedStartup() {
+            if (!selectedStartupRow) {
+                logMessage("Ничего не выбрано для удаления.", "gold");
+                return;
+            }
+            const name = selectedStartupRow.getAttribute('data-name');
+            logMessage(`Успешно удалено из автозагрузки реестра: ${name}`, "green");
+            
+            // Визуальное удаление строки
+            selectedStartupRow.remove();
+            selectedStartupRow = null;
+        }
+
+        // Обновить список автозагрузки (Возврат к исходным для демонстрации)
+        function refreshStartup() {
+            logMessage("Поиск записей автозапуска в HKCU/HKLM ветках реестра...", "white");
+            setTimeout(() => {
+                const tbody = document.getElementById('startup-table-body');
+                tbody.innerHTML = `
+                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="IntelDriverUpdate" data-risk="Высокий">
+                        <td class="p-3 font-semibold border-r border-[#2d2d32]">IntelDriverUpdate</td>
+                        <td class="p-3 border-r border-[#2d2d32] text-red-400 font-mono">C:\\Users\\Public\\Temp\\updater.exe --silent</td>
+                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-red-900/50 text-red-400 font-bold">Высокий</span></td>
+                        <td class="p-3 text-gray-400">HKCU\\Run</td>
+                    </tr>
+                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="WindowsHelperScript" data-risk="Подозрительный">
+                        <td class="p-3 font-semibold border-r border-[#2d2d32]">HelperScript</td>
+                        <td class="p-3 border-r border-[#2d2d32] text-orange-400 font-mono">C:\\Windows\\System32\\wscript.exe /e:VBScript C:\\ProgramData\\help.vbs</td>
+                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-orange-900/50 text-orange-400 font-bold">Подозрительный</span></td>
+                        <td class="p-3 text-gray-400">HKLM\\Run</td>
+                    </tr>
+                    <tr onclick="selectTableRow(this)" class="border-b border-[#2d2d32] hover:bg-[#25252a] cursor-pointer transition-colors" data-name="OneDrive" data-risk="Обычный">
+                        <td class="p-3 font-semibold border-r border-[#2d2d32]">OneDrive</td>
+                        <td class="p-3 border-r border-[#2d2d32] text-gray-300 font-mono">"C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe" /background</td>
+                        <td class="p-3 border-r border-[#2d2d32]"><span class="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-bold">Обычный</span></td>
+                        <td class="p-3 text-gray-400">HKCU\\Run</td>
+                    </tr>
+                `;
+                selectedStartupRow = null;
+                logMessage("Список автозагрузки обновлен. Найдено элементов: 3", "green");
+            }, 500);
+        }
+
+        // Выбор элемента процесса в таблице
+        let selectedProcessRow = null;
+        function selectProcessRow(row) {
+            if (selectedProcessRow) {
+                selectedProcessRow.classList.remove('bg-sky-600/30', 'border-sky-500');
+            }
+            selectedProcessRow = row;
+            selectedProcessRow.classList.add('bg-sky-600/30', 'border-sky-500');
+            
+            const name = row.getAttribute('data-name');
+            const pid = row.getAttribute('data-pid');
+            logMessage(`Выбран процесс: "${name}" [PID: ${pid}]`, "cyan");
+        }
+
+        // Завершить процесс
+        function killSelectedProcess() {
+            if (!selectedProcessRow) {
+                logMessage("Ничего не выбрано для завершения.", "gold");
+                return;
+            }
+            const name = selectedProcessRow.getAttribute('data-name');
+            const pid = selectedProcessRow.getAttribute('data-pid');
+            logMessage(`Процесс ${name} (PID: ${pid}) успешно ЗАВЕРШЕН.`, "green");
+            
+            selectedProcessRow.remove();
+            selectedProcessRow = null;
+        }
+
+        // Заморозить процесс
+        function suspendSelectedProcess() {
+            if (!selectedProcessRow) {
+                logMessage("Ничего не выбрано для заморозки.", "gold");
+                return;
+            }
+            const name = selectedProcessRow.getAttribute('data-name');
+            const pid = selectedProcessRow.getAttribute('data-pid');
+            logMessage(`Процесс ${name} (PID: ${pid}) переведен в состояние SUSPEND (ЗАМОРОЖЕН). Потоки остановлены.`, "gold");
+        }
+
+        // Разморозить процесс
+        function resumeSelectedProcess() {
+            if (!selectedProcessRow) {
+                logMessage("Ничего не выбрано для разморозки.", "gold");
+                return;
+            }
+            const name = selectedProcessRow.getAttribute('data-name');
+            const pid = selectedProcessRow.getAttribute('data-pid');
+            logMessage(`Процесс ${name} (PID: ${pid}) возобновил работу (RESUME). Потоки запущены.`, "green");
+        }
+
+        // Обновить список процессов
+        function refreshProcesses() {
+            logMessage("Обновление списка дескрипторов процессов в реальном времени...", "white");
+            setTimeout(() => {
+                logMessage("Список процессов обновлен успешно.", "green");
+            }, 300);
+        }
+
+        // Раздел ОГРАНИЧЕНИЯ (Исправление реестра)
+        function triggerFix(type, fixName) {
+            logMessage(`Запущена процедура: "${fixName}"...`, "white");
+            
+            setTimeout(() => {
+                if (type === 'taskmgr') {
+                    logMessage(`[ОБНОВЛЕНИЕ] Ограничение на запуск Диспетчера задач успешно снято (DisableTaskMgr удален).`, "green");
+                } else if (type === 'regedit') {
+                    logMessage(`[ОБНОВЛЕНИЕ] Редактор реестра успешно разблокирован.`, "green");
+                } else if (type === 'cmd') {
+                    logMessage(`[ОБНОВЛЕНИЕ] Запуск командной строки cmd.exe разблокирован для пользователя.`, "green");
+                } else if (type === 'disallowrun') {
+                    logMessage(`[ОБНОВЛЕНИЕ] Ключи DisallowRun успешно очищены. Безопасное ПО может запускаться без блокировок.`, "green");
+                } else if (type === 'scancode') {
+                    logMessage(`[ОБНОВЛЕНИЕ] Карта раскладки клавиатуры Scancode Map сброшена к стандартным значениям.`, "green");
+                } else if (type === 'hosts') {
+                    logMessage(`[ЗАПИСЬ] Файл hosts сброшен на базовую конфигурацию (127.0.0.1 localhost).`, "green");
+                }
+            }, 600);
+        }
+
+        // Быстрое сканирование (Главная страница)
+        function runQuickScan() {
+            const headline = document.getElementById('status-headline');
+            headline.innerText = "⏳ ИДЕТ СКАНИРОВАНИЕ СИСТЕМЫ...";
+            headline.className = "text-lg font-bold text-sky-400 animate-pulse flex items-center gap-2";
+
+            logMessage("--- НАЧАЛО ЭКСПРЕСС-СКАН ИРОВАНИЯ ---", "cyan");
+            
+            setTimeout(() => {
+                logMessage("[АНАЛИЗ] Проверка системных ограничений (Policies\\System)...", "white");
+            }, 300);
+
+            setTimeout(() => {
+                logMessage("[АНАЛИЗ] Сканирование файла hosts на перенаправления...", "white");
+            }, 600);
+
+            setTimeout(() => {
+                logMessage("[АНАЛИЗ] Анализ веток автозапуска реестра HKCU/HKLM...", "white");
+                logMessage("[УГРОЗА] Обнаружен вирусный запуск updater.exe в папке Temp!", "red");
+                logMessage("[УГРОЗА] Обнаружен подозрительный сценарий .vbs в реестре Run!", "gold");
+            }, 1000);
+
+            setTimeout(() => {
+                logMessage("--- СКАНИРОВАНИЕ ЗАВЕРШЕНО. Найдено угроз/проблем: 2 ---", "red");
+                headline.innerText = "🚨 СИСТЕМА НЕ В БЕЗОПАСНОСТИ: НАЙДЕНЫ УГРОЗЫ";
+                headline.className = "text-lg font-bold text-rose-500 flex items-center gap-2";
+            }, 1500);
+        }
+
+        // Запуск инструментов очистки/SFC
+        function runTool(toolId, toolName) {
+            logMessage(`Запущен инструмент: "${toolName}"...`, "white");
+            
+            if (toolId === 'cleanTemp') {
+                logMessage("Сканирование каталогов временных файлов Windows Temp...", "white");
+                setTimeout(() => {
+                    logMessage("Очистка файлов кэша, логов и файлов сессий браузера завершена.", "green");
+                    logMessage("Освобождено: 1.4 ГБ дискового пространства.", "green");
+                }, 1000);
+            } 
+            else if (toolId === 'flushDNS') {
+                logMessage("Выполнение команды: 'ipconfig /flushdns'...", "white");
+                setTimeout(() => {
+                    logMessage("Кэш сопоставителя DNS успешно очищен.", "green");
+                }, 600);
+            } 
+            else if (toolId === 'resetAssoc') {
+                logMessage("Проверка ассоциаций реестра для (.exe, .lnk, .bat, .cmd)...", "white");
+                setTimeout(() => {
+                    logMessage("Все критические ассоциации возвращены к системным стандартам.", "green");
+                }, 800);
+            } 
+            else if (toolId === 'sfc') {
+                logMessage("Эмуляция выполнения команды: 'sfc /scannow' в фоновом режиме...", "white");
+                setTimeout(() => {
+                    logMessage("[SFC Scan] Проверка целостности дескрипторов...", "white");
+                }, 500);
+                setTimeout(() => {
+                    logMessage("[SFC Scan] Нарушений целостности системных файлов не обнаружено.", "green");
+                }, 1800);
             }
         }
-        type();
+
+        // Закрытие утилиты (заглушка)
+        function mockExit() {
+            logMessage("Попытка завершения процесса NHelper.exe...", "red");
+            setTimeout(() => {
+                if(confirm("Вы уверены, что хотите выйти из NHelper? Все несохраненные логи работы будут утеряны.")) {
+                    document.body.innerHTML = `
+                        <div class="h-screen w-screen flex flex-col items-center justify-center bg-[#0c0c0e] text-gray-500 text-center font-mono">
+                            <h1 class="text-4xl font-bold text-red-500 mb-2">PROCESS_TERMINATED</h1>
+                            <p class="text-sm">Утилита восстановления NHelper успешно завершила свою сессию.</p>
+                            <button onclick="window.location.reload()" class="mt-6 px-4 py-2 bg-[#2d2d32] text-white rounded hover:bg-[#35353a] transition-all">Перезапустить утилиту</button>
+                        </div>
+                    `;
+                }
+            }, 100);
+        }
     </script>
 </body>
 </html>
